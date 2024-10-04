@@ -3,7 +3,7 @@ package com.example.wizardsapplication.repo
 import android.net.ConnectivityManager
 import android.util.Log
 import com.example.wizardsapplication.data.model.WizardResponseItem
-import com.example.wizardsMyApplication.data.model.elixir.ElixirResponse
+import com.example.wizardsapplication.data.model.elixir.ElixirResponse
 import com.example.wizardsapplication.common.Resource
 import com.example.wizardsapplication.common.handleApiResponse
 
@@ -13,17 +13,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-val Tag= "WizardRepository"
+val Tag = "WizardRepository"
+
 class WizardRepository @Inject constructor(
     val remoteData: WizardApiService,
     val localData: WizardDao,
     val connectivityManager: ConnectivityManager,
-) : WizardApiLmp {
+) {
 
-    override suspend fun getWizard(): Resource<ArrayList<WizardResponseItem>> {
+    suspend fun getWizards(): Resource<ArrayList<WizardResponseItem>> {
 
         val activeNetwork = connectivityManager.activeNetworkInfo
-        val isConnected= activeNetwork?.isConnected == true
+        val isConnected = activeNetwork?.isConnected == true
 
         return if (isConnected) {
             try {
@@ -53,9 +54,9 @@ class WizardRepository @Inject constructor(
             withContext(Dispatchers.IO) {
                 localData.insertAll(data)
             }
-            Log.d("WizardRepository", "Data successfully saved to local database")
+            Log.d(Tag, "Data successfully saved to local database")
         } catch (e: Exception) {
-            Log.e("WizardRepository", "Error saving data to local: ${e.localizedMessage}")
+            Log.e(Tag, "Error saving data to local: ${e.localizedMessage}")
         }
     }
 
@@ -65,14 +66,14 @@ class WizardRepository @Inject constructor(
                 localData.getAllWizards()
             }
             Log.d(Tag, "Data fetched from local: $localDataList")
-            Resource.Success(ArrayList(localDataList),"No Have Internet Connection")
+            Resource.Success(ArrayList(localDataList), "No Have Internet Connection")
         } catch (e: Exception) {
-            Log.e( Tag, "Error fetching from local database: ${e.localizedMessage}")
+            Log.e(Tag, "Error fetching from local database: ${e.localizedMessage}")
             Resource.Error("Error fetching from local database", null)
         }
     }
 
-    override suspend fun getElixir(id: String): Resource<ElixirResponse> {
+    suspend fun getElixir(id: String): Resource<ElixirResponse> {
         return remoteData.getElixirDetails(id).handleApiResponse()
     }
 

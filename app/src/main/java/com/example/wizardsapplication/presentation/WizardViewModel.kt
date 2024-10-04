@@ -6,6 +6,8 @@ import com.example.wizardsapplication.data.local.WizardDao
 import com.example.wizardsapplication.data.model.Elixir
 import com.example.wizardsapplication.data.model.Favorite
 import com.example.wizardsapplication.data.model.WizardResponseItem
+import com.example.wizardsapplication.domain.GetElixirUseCase
+import com.example.wizardsapplication.domain.GetWizardsUseCase
 import com.example.wizardsapplication.repo.WizardRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,21 +20,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WizardViewModel @Inject constructor(
-    private val repository: WizardRepository,
+    private val wizardUseCase: GetWizardsUseCase,
+    private val elixirUseCase: GetElixirUseCase,
     val wizardDao: WizardDao
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WizardUiState())
     val uiState: StateFlow<WizardUiState> = _uiState.asStateFlow()
 
+    private var favoriteList = listOf<String>()
 
     init {
-        fetchData()
+        loadFavorites()
+        getWizards()
+    }
+
+    private fun loadFavorites() {
+        viewModelScope.launch(Dispatchers.IO) {
+            favoriteList = wizardDao.getAllFavoriteIDs().map { it.id }
+        }
     }
 
     fun toggleFavorite(wizardId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val favoriteList = wizardDao.getAllFavoriteIDs().map { it.id }
             val isFavorite = favoriteList.contains(wizardId)
 
             if (isFavorite) {
@@ -88,7 +98,7 @@ class WizardViewModel @Inject constructor(
         }
     }
 
-    fun fetchData() {
+    fun getWizards() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
 
@@ -96,19 +106,11 @@ class WizardViewModel @Inject constructor(
                     it.copy(isLoading = true)
                 }
 
-                val resource = repository.getWizard()
-
-                val favoriteList = wizardDao.getAllFavoriteIDs().map { it.id }
-                val favoriteSet = favoriteList.toSet()
-                val updatedWizards: List<WizardResponseItem>? = resource.data?.map { wizard ->
-                    wizard.isFavorite = favoriteSet.contains(wizard.id)
-                    wizard
-                }
-
+                val resource = wizardUseCase.invoke()
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        wizardList = updatedWizards,
+                        wizardList = resource.data,
                         errorMessage = if (resource.message?.isNotEmpty() == true) resource.message else ""
                     )
                 }
@@ -127,17 +129,21 @@ class WizardViewModel @Inject constructor(
     fun getElixirDetails() {
         viewModelScope.launch {
             try {
+
                 _uiState.update {
                     it.copy(isLoading = true)
                 }
-                val data = uiState.value.elixirSelectedItem?.id?.let { repository.getElixir(it) }
+
+                val elixirData =
+                    uiState.value.elixirSelectedItem?.id?.let { elixirUseCase.invoke(it) }
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        elixirDetailItem = data?.data,
+                        elixirDetailItem = elixirData?.data,
                         currentScreen = Screen.ElixirDetails
                     )
                 }
+
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

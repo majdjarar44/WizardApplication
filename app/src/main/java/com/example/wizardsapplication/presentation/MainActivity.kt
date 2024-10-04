@@ -1,4 +1,4 @@
-package com.example.wizardsapplication
+package com.example.wizardsapplication.presentation
 
 import android.os.Bundle
 import android.widget.Toast
@@ -33,11 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.wizardsapplication.presentation.ElixirDetailsScreen
-import com.example.wizardsapplication.presentation.Screen
-import com.example.wizardsapplication.presentation.WizardDetailsScreen
-import com.example.wizardsapplication.presentation.WizardListScreen
-import com.example.wizardsapplication.presentation.WizardViewModel
+import com.example.wizardsapplication.R
 import com.example.wizardsapplication.ui.theme.WizardsApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 

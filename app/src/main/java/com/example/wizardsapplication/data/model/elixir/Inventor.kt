@@ -1,4 +1,4 @@
-package com.example.wizardsMyApplication.data.model.elixir
+package com.example.wizardsapplication.data.model.elixir
 
 
 data class Inventor(
