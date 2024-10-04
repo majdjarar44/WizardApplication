@@ -129,14 +129,21 @@ class WizardViewModel @Inject constructor(
     fun getElixirDetails() {
         viewModelScope.launch {
             try {
+
                 _uiState.update {
                     it.copy(isLoading = true)
                 }
+
                 val elixirData =
                     uiState.value.elixirSelectedItem?.id?.let { elixirUseCase.invoke(it) }
                 _uiState.update {
-                    it.copy(elixirDetailItem = elixirData?.data)
+                    it.copy(
+                        isLoading = false,
+                        elixirDetailItem = elixirData?.data,
+                        currentScreen = Screen.ElixirDetails
+                    )
                 }
+
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(

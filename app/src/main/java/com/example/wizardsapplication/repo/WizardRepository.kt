@@ -3,7 +3,7 @@ package com.example.wizardsapplication.repo
 import android.net.ConnectivityManager
 import android.util.Log
 import com.example.wizardsapplication.data.model.WizardResponseItem
-import com.example.wizardsMyApplication.data.model.elixir.ElixirResponse
+import com.example.wizardsapplication.data.model.elixir.ElixirResponse
 import com.example.wizardsapplication.common.Resource
 import com.example.wizardsapplication.common.handleApiResponse
 

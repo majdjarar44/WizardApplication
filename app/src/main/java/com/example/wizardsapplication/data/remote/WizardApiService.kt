@@ -1,7 +1,7 @@
 package com.example.wizardsapplication.data.remote
 
 
-import com.example.wizardsMyApplication.data.model.elixir.ElixirResponse
+import com.example.wizardsapplication.data.model.elixir.ElixirResponse
 import com.example.wizardsapplication.data.model.WizardResponseItem
 import retrofit2.Response
 

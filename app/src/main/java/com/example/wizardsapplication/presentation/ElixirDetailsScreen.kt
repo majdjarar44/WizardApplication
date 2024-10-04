@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.wizardsMyApplication.data.model.elixir.ElixirResponse
+import com.example.wizardsapplication.data.model.elixir.ElixirResponse
 
 
 @Composable
