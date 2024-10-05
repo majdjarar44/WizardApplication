@@ -31,18 +31,13 @@ class WizardViewModel @Inject constructor(
     private var favoriteList = listOf<String>()
 
     init {
-        loadFavorites()
         getWizards()
     }
 
-    private fun loadFavorites() {
-        viewModelScope.launch(Dispatchers.IO) {
-            favoriteList = wizardDao.getAllFavoriteIDs().map { it.id }
-        }
-    }
 
     fun toggleFavorite(wizardId: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            val favoriteList = wizardDao.getAllFavoriteIDs().map { it.id }
             val isFavorite = favoriteList.contains(wizardId)
 
             if (isFavorite) {
@@ -63,7 +58,6 @@ class WizardViewModel @Inject constructor(
             }
         }
     }
-
 
     fun selectWizard(wizard: WizardResponseItem) {
         _uiState.update {
